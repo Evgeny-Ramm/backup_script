@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 import argparse
 import sys
 import os
+from datetime import datetime
 
 def main():
     parser = argparse.ArgumentParser(
@@ -40,13 +42,11 @@ def main():
 
     args = parser.parse_args()
 
-    # Пока просто выведем полученные аргументы, чтобы убедиться, что всё работает
+    # Отладочный вывод (можно будет убрать позже)
     print("Источники:", args.sources)
-    print("Папка назначения:", args.dest)
-    print("Имя архива:", args.name)
-    print("Формат:", args.format)
-    print("Подробный режим:", args.verbose)
-        # Проверка существования источников
+    print("Папка назначения (как введено):", args.dest)
+
+    # 1. Проверяем, какие источники существуют
     valid_sources = []
     for src in args.sources:
         if os.path.exists(src):
@@ -58,30 +58,27 @@ def main():
         print("Ошибка: нет ни одного существующего источника для бэкапа.")
         sys.exit(1)
 
-    # Создание папки назначения
-    dest_dir = os.path.expanduser(args.dest)  # заменяет ~ на /home/ev
+    # 2. Создаём папку назначения
+    dest_dir = os.path.expanduser(args.dest)   # заменяет ~ на /home/ev
     os.makedirs(dest_dir, exist_ok=True)
-    print(f"Папка назначения: {dest_dir}")
+    print(f"Папка назначения (полный путь): {dest_dir}")
+
+    # 3. Генерируем имя архива с датой
+    now = datetime.now()
+    date_str = now.strftime("%Y-%m-%d_%H-%M-%S")
+    base_name = args.name
+    extension = 'zip' if args.format == 'zip' else 'tar'
+    archive_filename = f"{base_name}_{date_str}.{extension}"
+    archive_path = os.path.join(dest_dir, archive_filename)
+
+    print(f"Имя архива: {archive_filename}")
+    print(f"Полный путь к архиву: {archive_path}")
+
+    # 4. Здесь будет создание архива (следующий шаг)
+    # Пока только выводим информацию
+    print("Базовое имя архива:", args.name)
+    print("Формат:", args.format)
+    print("Подробный режим:", args.verbose)
+
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
